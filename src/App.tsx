@@ -83,8 +83,25 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		if (inputData) {
 			const lines = inputData.split('\n').filter(line => line.trim() !== '');
 			const randomIndex = Math.floor(Math.random() * lines.length);
+
 			setSentenceToCheck(lines[randomIndex]);
 			setSentenceCheckResult('');
+
+
+			const sentenceToSpeak = lines[randomIndex];
+			const utterance = new SpeechSynthesisUtterance(sentenceToSpeak);
+			for (const voice of speechSynthesis.getVoices()) {
+				if (voice.lang === 'fr-FR') {
+					utterance.voice = voice;
+					// Missing break is not a bug. We use the last because the fist
+					// doesn't work.
+				}
+			}
+			utterance.onerror = (event: SpeechSynthesisErrorEvent) => {
+				console.error("Speech synthesis error:", event.error);
+			};
+			utterance.rate = 0.8;
+			speechSynthesis.speak(utterance);
 		}
 	};
 
@@ -103,7 +120,6 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 			<div style={{ width: "90%", height: "40%", display: "block", margin: "0 auto" }}>
 				{sentenceToCheck &&
 					<div>
-						<p>Sentence: {sentenceToCheck}</p>
 						<input style={{ width: "100%" }} type="text" placeholder="Enter text here" onChange={handleSentenceInputChange}></input>
 						<button onClick={checkSentence}>Check</button>
 					</div>
