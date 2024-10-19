@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -73,6 +73,14 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	const [inputSentence, setInputSentence] = useState<string>('');
 	const [sentenceCheckResult, setSentenceCheckResult] = useState<string>('');
 
+	// the setter from useState is not synchronous, so
+	// we use a hook to read it after setting it.
+	useEffect(() => {
+		if (sentenceToCheck) {
+			speak();
+		}
+	}, [sentenceToCheck]);
+
 	const handleSentenceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setInputSentence(event.target.value);
 	};
@@ -86,23 +94,25 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 
 			setSentenceToCheck(lines[randomIndex]);
 			setSentenceCheckResult('');
-
-
-			const sentenceToSpeak = lines[randomIndex];
-			const utterance = new SpeechSynthesisUtterance(sentenceToSpeak);
-			for (const voice of speechSynthesis.getVoices()) {
-				if (voice.lang === 'fr-FR') {
-					utterance.voice = voice;
-					// Missing break is not a bug. We use the last because the fist
-					// doesn't work.
-				}
-			}
-			utterance.onerror = (event: SpeechSynthesisErrorEvent) => {
-				console.error("Speech synthesis error:", event.error);
-			};
-			utterance.rate = 0.8;
-			speechSynthesis.speak(utterance);
 		}
+	};
+
+
+	const speak = () => {
+		console.log("sentenceToCheck: " + sentenceToCheck);
+		const utterance = new SpeechSynthesisUtterance(sentenceToCheck);
+		for (const voice of speechSynthesis.getVoices()) {
+			if (voice.lang === 'fr-FR') {
+				utterance.voice = voice;
+				// Missing break is not a bug. We use the last because the fist
+				// doesn't work.
+			}
+		}
+		utterance.onerror = (event: SpeechSynthesisErrorEvent) => {
+			console.error("Speech synthesis error:", event.error);
+		};
+		utterance.rate = 0.8;
+		speechSynthesis.speak(utterance);
 	};
 
 	const checkSentence = () => {
@@ -126,6 +136,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 				{sentenceToCheck &&
 					<div>
 						<input style={{ width: "100%" }} type="text" placeholder="Enter text here" onChange={handleSentenceInputChange}></input>
+						<button onClick={speak}>Repeat</button>
 						<button onClick={checkSentence}>Check</button>
 					</div>
 				}
