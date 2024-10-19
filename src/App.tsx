@@ -127,7 +127,6 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		} else {
 			setSentenceCheckResult("Not quite: " + sentenceToCheck);
 		}
-		setSentenceToCheck('');
 	};
 
 	const close = () => {
@@ -150,7 +149,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	return (
 		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'white', padding: '20px', zIndex: 100 }}>
 			<div style={{ width: "90%", height: "40%", display: "block", margin: "0 auto" }}>
-				{sentenceToCheck &&
+				{sentenceToCheck && !sentenceCheckResult &&
 					<div>
 						<input style={{ width: "100%" }} type="text" placeholder="Enter text here" onChange={handleSentenceInputChange}></input>
 						<button onClick={speak}>Repeat</button>
@@ -158,9 +157,14 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 						<button onClick={checkSentence}>Check</button>
 					</div>
 				}
-				{sentenceCheckResult && <div><p>{sentenceCheckResult}</p></div>}
+				{sentenceCheckResult &&
+					<div>
+						<p>{sentenceCheckResult}</p>
+						<button onClick={() => { setSentenceCheckResult('') }}>Try Again</button>
+					</div>
+				}
 				<p> There are {inputData.split('\n').length} sentences </p>
-				{!sentenceToCheck && <button onClick={showRandomLine}>Show Random Sentence</button>}
+				<button onClick={showRandomLine}>Show Random Sentence</button>
 				<button onClick={close}>Clear sentences</button>
 			</div>
 		</div>
