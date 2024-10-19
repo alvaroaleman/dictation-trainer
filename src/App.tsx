@@ -141,6 +141,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	};
 
 	const checkSentence = () => {
+		speechSynthesis.cancel();
 		if (inputSentence === sentenceToCheck.replaceAll('’', "'")) {
 			setSentenceCheckResult("You got it right!");
 		} else {
