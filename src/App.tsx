@@ -121,11 +121,30 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		speechSynthesis.speak(utterance);
 	};
 
+	function highlightDifferences(str1: string, str2: string): string {
+		const diff = require('diff'); // Import diff library
+
+		const changes = diff.diffChars(str1, str2);
+
+		let result = '';
+		for (const change of changes) {
+			if (change.added) {
+				result += `<span style="color: green; font-weight: bold;">${change.value}</span>`;
+			} else if (change.removed) {
+				result += `<span style="color: red; font-weight: bold;">${change.value}</span>`;
+			} else {
+				result += change.value;
+			}
+		}
+
+		return result;
+	};
+
 	const checkSentence = () => {
-		if (inputSentence === sentenceToCheck) {
+		if (inputSentence === sentenceToCheck.replaceAll('’', "'")) {
 			setSentenceCheckResult("You got it right!");
 		} else {
-			setSentenceCheckResult("Not quite: " + sentenceToCheck);
+			setSentenceCheckResult("Not quite: " + highlightDifferences(inputSentence, sentenceToCheck.replaceAll('’', "'")));
 		}
 	};
 
@@ -146,6 +165,11 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		}
 	};
 
+	const tryAgain = () => {
+		setSentenceCheckResult('');
+		speak();
+	};
+
 	return (
 		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'white', padding: '20px', zIndex: 100 }}>
 			<div style={{ width: "90%", height: "40%", display: "block", margin: "0 auto" }}>
@@ -159,8 +183,8 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 				}
 				{sentenceCheckResult &&
 					<div>
-						<p>{sentenceCheckResult}</p>
-						<button onClick={() => { setSentenceCheckResult('') }}>Try Again</button>
+						<p dangerouslySetInnerHTML={{ __html: sentenceCheckResult }} />
+						<button onClick={tryAgain}>Try Again</button>
 					</div>
 				}
 				<p> There are {inputData.split('\n').length} sentences </p>
