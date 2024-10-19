@@ -99,9 +99,9 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	};
 
 	const speak = () => {
-		let sentence: string = sentenceToCheck;
+		let sentence: string = sentenceToCheckLocal;
 		if (sentence === '') {
-			sentence = sentenceToCheckLocal;
+			sentence = sentenceToCheck;
 		}
 		const utterance = new SpeechSynthesisUtterance(sentence);
 		for (const voice of speechSynthesis.getVoices()) {
