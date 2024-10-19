@@ -69,7 +69,13 @@ interface SimpleDialogWithInputProps {
 }
 
 const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOpen, onClose }) => {
-	const [randomLine, setRandomLine] = useState<string>('');
+	const [sentenceToCheck, setSentenceToCheck] = useState<string>('');
+	const [inputSentence, setInputSentence] = useState<string>('');
+	const [sentenceCheckResult, setSentenceCheckResult] = useState<string>('');
+
+	const handleSentenceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setInputSentence(event.target.value);
+	};
 
 	if (!isOpen) return null;
 
@@ -77,17 +83,34 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		if (inputData) {
 			const lines = inputData.split('\n').filter(line => line.trim() !== '');
 			const randomIndex = Math.floor(Math.random() * lines.length);
-			setRandomLine(lines[randomIndex]);
+			setSentenceToCheck(lines[randomIndex]);
+			setSentenceCheckResult('');
 		}
+	};
+
+	const checkSentence = () => {
+		if (inputSentence === sentenceToCheck) {
+			setSentenceCheckResult("You got it right!");
+		} else {
+			setSentenceCheckResult("Not quite: " + sentenceToCheck);
+		}
+		setSentenceToCheck('');
 	};
 
 
 	return (
 		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'grey', padding: '20px', zIndex: 100 }}>
-			<div>
-				{randomLine && <p>Sentence: {randomLine}</p>}
+			<div style={{ width: "90%", height: "40%", display: "block", margin: "0 auto" }}>
+				{sentenceToCheck &&
+					<div>
+						<p>Sentence: {sentenceToCheck}</p>
+						<input style={{ width: "100%" }} type="text" placeholder="Enter text here" onChange={handleSentenceInputChange}></input>
+						<button onClick={checkSentence}>Check</button>
+					</div>
+				}
+				{sentenceCheckResult && <div><p>{sentenceCheckResult}</p></div>}
 				<p> There are {inputData.split('\n').length} sentences </p>
-				<button onClick={showRandomLine}>Show Random Sentence</button>
+				{!sentenceToCheck && <button onClick={showRandomLine}>Show Random Sentence</button>}
 				<button onClick={onClose}>Clear sentences</button>
 			</div>
 		</div>
