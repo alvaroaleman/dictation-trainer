@@ -72,6 +72,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	const [sentenceToCheck, setSentenceToCheck] = useState<string>('');
 	const [inputSentence, setInputSentence] = useState<string>('');
 	const [sentenceCheckResult, setSentenceCheckResult] = useState<string>('');
+	const [speechSynthesisPaused, setSpeechSynthesisPaused] = useState<boolean>(false);
 
 	const handleSentenceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setInputSentence(event.target.value);
@@ -102,19 +103,18 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		if (sentence === '') {
 			sentence = sentenceToCheckLocal;
 		}
-		console.log("sentencce: " + sentence);
 		const utterance = new SpeechSynthesisUtterance(sentence);
 		for (const voice of speechSynthesis.getVoices()) {
 			if (voice.lang === 'fr-FR') {
 				utterance.voice = voice;
 				// Missing break is not a bug. We use the last because the fist
 				// doesn't work.
-				console.log("Set voice" + voice);
 			}
 		}
 		utterance.onerror = (event: SpeechSynthesisErrorEvent) => {
 			console.error("Speech synthesis error:", event.error);
 		};
+		setSpeechSynthesisPaused(false);
 		utterance.rate = 0.8;
 		speechSynthesis.cancel();
 		speechSynthesis.resume();
@@ -135,13 +135,26 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		onClose();
 	}
 
+	const pauseResume = () => {
+		if (speechSynthesisPaused) {
+			speechSynthesis.resume();
+			setSpeechSynthesisPaused(false);
+			console.log("resuming");
+		} else {
+			setSpeechSynthesisPaused(true);
+			speechSynthesis.pause();
+			console.log("pausing");
+		}
+	};
+
 	return (
-		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'grey', padding: '20px', zIndex: 100 }}>
+		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'white', padding: '20px', zIndex: 100 }}>
 			<div style={{ width: "90%", height: "40%", display: "block", margin: "0 auto" }}>
 				{sentenceToCheck &&
 					<div>
 						<input style={{ width: "100%" }} type="text" placeholder="Enter text here" onChange={handleSentenceInputChange}></input>
 						<button onClick={speak}>Repeat</button>
+						<button onClick={pauseResume}>Pause/Resume</button>
 						<button onClick={checkSentence}>Check</button>
 					</div>
 				}
