@@ -114,6 +114,11 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		setSentenceToCheck('');
 	};
 
+	const close = () => {
+		setSentenceToCheck('');
+		onClose();
+	}
+
 
 	return (
 		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'grey', padding: '20px', zIndex: 100 }}>
@@ -127,7 +132,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 				{sentenceCheckResult && <div><p>{sentenceCheckResult}</p></div>}
 				<p> There are {inputData.split('\n').length} sentences </p>
 				{!sentenceToCheck && <button onClick={showRandomLine}>Show Random Sentence</button>}
-				<button onClick={onClose}>Clear sentences</button>
+				<button onClick={close}>Clear sentences</button>
 			</div>
 		</div>
 	);
