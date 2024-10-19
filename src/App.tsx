@@ -74,7 +74,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	const [sentenceCheckResult, setSentenceCheckResult] = useState<string>('');
 	const [speechSynthesisPaused, setSpeechSynthesisPaused] = useState<boolean>(false);
 
-	const handleSentenceInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleSentenceInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setInputSentence(event.target.value);
 	};
 
@@ -176,7 +176,12 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 			<div style={{ width: "90%", height: "40%", display: "block", margin: "0 auto" }}>
 				{sentenceToCheck && !sentenceCheckResult &&
 					<div>
-						<input style={{ width: "100%" }} type="text" placeholder="Enter text here" onChange={handleSentenceInputChange}></input>
+						<textarea
+							rows={5}
+							cols={50}
+							onChange={handleSentenceInputChange}
+							style={{ width: '100%' }}
+						/>
 						<button onClick={speak}>Repeat</button>
 						<button onClick={pauseResume}>Pause/Resume</button>
 						<button onClick={checkSentence}>Check</button>
