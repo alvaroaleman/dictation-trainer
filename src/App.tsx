@@ -4,16 +4,16 @@ import './App.css';
 function App() {
 	const [sentenceInputOpen, setSentenceInputOpen] = useState<boolean>(true);
 	const [sentenceTrainerOpen, setSentenceTrainerOpen] = useState<boolean>(false);
-	const [sentences, setSentences] = useState<string>('');
+	const [sentences, setSentences] = useState<string[]>([]);
 
 	const handleSentenceInputClose = (data: string): void => {
-		setSentences(data)
+		setSentences(data.split(/\.|\?|\!|\n/g).map((sentence) => sentence.trim()).filter(sentence => sentence.length > 0));
 		setSentenceInputOpen(false);
 		setSentenceTrainerOpen(true);
 	};
 
 	const handleSentenceTrainerClose = (): void => {
-		setSentences('');
+		setSentences([]);
 		setSentenceInputOpen(true);
 		setSentenceTrainerOpen(false);
 	};
@@ -63,7 +63,7 @@ const SentenceInputDialog: React.FC<SimpleInputDialogProps> = ({ isOpen, onClose
 };
 
 interface SimpleDialogWithInputProps {
-	inputData: string;
+	inputData: string[];
 	isOpen: boolean;
 	onClose: () => void;
 }
@@ -83,17 +83,17 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	let sentenceToCheckLocal: string = '';
 	const showRandomLine = () => {
 		if (inputData) {
-			const lines = inputData.split('\n').filter(line => line.trim() !== '');
-			const randomIndex = Math.floor(Math.random() * lines.length);
+			const randomIndex = Math.floor(Math.random() * inputData.length);
 
-			setSentenceToCheck(lines[randomIndex]);
+			setSentenceToCheck(inputData[randomIndex]);
+			setInputSentence('');
 			setSentenceCheckResult('');
 
 			// setSentenceToCheck is async but we can not use local state
 			// in the repeat button callback as it has a different scope.
 			// So we have to use the local var here and the global state in
 			// the callback.
-			sentenceToCheckLocal = lines[randomIndex];
+			sentenceToCheckLocal = inputData[randomIndex];
 			speak();
 		}
 	};
@@ -187,8 +187,8 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 						<button onClick={tryAgain}>Try Again</button>
 					</div>
 				}
-				<p> There are {inputData.split('\n').length} sentences </p>
-				<button onClick={showRandomLine}>Show Random Sentence</button>
+				<p> There are {inputData.length} sentences </p>
+				<button onClick={showRandomLine}>Practise random sentence</button>
 				<button onClick={close}>Clear sentences</button>
 			</div>
 		</div>
