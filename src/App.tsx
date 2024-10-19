@@ -7,7 +7,7 @@ function App() {
 	const [sentences, setSentences] = useState<string[]>([]);
 
 	const handleSentenceInputClose = (data: string): void => {
-		setSentences(data.split(/\.|\?|\!|\n/g).map((sentence) => sentence.trim()).filter(sentence => sentence.length > 0));
+		setSentences(data.split(/\.|\?|!|\n/g).map((sentence) => sentence.trim()).filter(sentence => sentence.length > 0));
 		setSentenceInputOpen(false);
 		setSentenceTrainerOpen(true);
 	};
