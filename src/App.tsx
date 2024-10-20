@@ -107,8 +107,11 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		for (const voice of speechSynthesis.getVoices()) {
 			if (voice.lang === 'fr-FR') {
 				utterance.voice = voice;
-				// Missing break is not a bug. We use the last because the fist
-				// doesn't work.
+				if (voice.name === 'Google français') {
+					break
+				}
+				// Missing break is not a bug. We use Google français if available, otherwise
+				// fall through to the last.
 			}
 		}
 		utterance.onerror = (event: SpeechSynthesisErrorEvent) => {
