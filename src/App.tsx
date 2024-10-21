@@ -107,7 +107,8 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		for (const voice of speechSynthesis.getVoices()) {
 			if (voice.lang === 'fr-FR') {
 				utterance.voice = voice;
-				if (voice.name === 'Google français') {
+				console.log("voice: " + voice.name);
+				if (voice.name === 'Google français' || voice.name === 'Audrey (Premium)') {
 					break
 				}
 				// Missing break is not a bug. We use Google français if available, otherwise
