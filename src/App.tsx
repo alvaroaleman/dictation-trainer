@@ -102,7 +102,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 			cursor += weight;
 			if (cursor >= threshold) {
 				sentenceToCheckLocal = sentence;
-				setWeightedSentences(weightedSentences.set(sentence, weight / 2));
+				setWeightedSentences(weightedSentences.set(sentence, weight / 4));
 				break;
 			}
 		}
@@ -177,10 +177,10 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		}
 		if (toCompare === sentenceToCheck) {
 			setSentenceCheckResult("You got it right!");
-			weight /= 2;
+			weight /= 4;
 		} else {
 			setSentenceCheckResult("Not quite: " + highlightDifferences(inputSentence, sentenceToCheck));
-			weight *= 2;
+			weight *= 4;
 		}
 		setWeightedSentences(weightedSentences.set(sentenceToCheck, weight));
 	};
