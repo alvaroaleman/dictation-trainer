@@ -107,6 +107,8 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 			}
 		}
 
+		console.log("weights: ", weightedSentences);
+
 		setSentenceToCheck(sentenceToCheckLocal);
 		setInputSentence('');
 		setSentenceCheckResult('');
@@ -169,7 +171,11 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	const checkSentence = () => {
 		speechSynthesis.cancel();
 		let weight: number = weightedSentences.get(sentenceToCheck) ?? 0;
-		if (inputSentence === sentenceToCheck) {
+		let toCompare = inputSentence;
+		if (toCompare.endsWith("?")) {
+			toCompare = inputSentence.slice(0, -1);
+		}
+		if (toCompare === sentenceToCheck) {
 			setSentenceCheckResult("You got it right!");
 			weight /= 2;
 		} else {
