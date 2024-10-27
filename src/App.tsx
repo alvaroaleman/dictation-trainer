@@ -69,8 +69,9 @@ interface SimpleDialogWithInputProps {
 }
 
 const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOpen, onClose }) => {
-	const [sentenceToCheck, setSentenceToCheck] = useState<string>('');
-	const [inputSentence, setInputSentence] = useState<string>('');
+	const [sentenceToCheck, setSentenceToCheck] = useState('');
+	const [weightedSentences, setWeightedSentences] = useState(new Map<string, number>());
+	const [inputSentence, setInputSentence] = useState('');
 	const [sentenceCheckResult, setSentenceCheckResult] = useState<string>('');
 	const [speechSynthesisPaused, setSpeechSynthesisPaused] = useState<boolean>(false);
 
@@ -80,26 +81,47 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 
 	if (!isOpen) return null;
 
-	let sentenceToCheckLocal: string = '';
+	if (!hasSameKeys(weightedSentences, inputData)) {
+		weightedSentences.clear();
+		for (const sentence of inputData) {
+			weightedSentences.set(sentence.replaceAll('’', "'"), 1);
+		};
+	}
+
+	// setSentenceToCheck is async but we can not use local state
+	// in the repeat button callback as it has a different scope.
+	// So we have to use the local var here and the global state in
+	// the callback.
+	let sentenceToCheckLocal: string = "";
 	const showRandomLine = () => {
-		if (inputData) {
-			const randomIndex = Math.floor(Math.random() * inputData.length);
+		const totalWeight = [...weightedSentences.values()].reduce((sum, val) => sum + val, 0);
+		const threshold = Math.random() * totalWeight;
 
-			setSentenceToCheck(inputData[randomIndex]);
-			setInputSentence('');
-			setSentenceCheckResult('');
-
-			// setSentenceToCheck is async but we can not use local state
-			// in the repeat button callback as it has a different scope.
-			// So we have to use the local var here and the global state in
-			// the callback.
-			sentenceToCheckLocal = inputData[randomIndex];
-			speak();
+		let cursor = 0;
+		for (const [sentence, weight] of weightedSentences.entries()) {
+			cursor += weight;
+			if (cursor >= threshold) {
+				sentenceToCheckLocal = sentence;
+				break;
+			}
 		}
+
+		setSentenceToCheck(sentenceToCheckLocal);
+		setInputSentence('');
+		setSentenceCheckResult('');
+
+		speak();
 	};
 
+	const resetWeighs = () => {
+		for (const k of weightedSentences.keys()) {
+			weightedSentences.set(k, 1);
+		}
+		setWeightedSentences(weightedSentences);
+	}
+
 	const speak = () => {
-		let sentence: string = sentenceToCheckLocal;
+		let sentence = sentenceToCheckLocal;
 		if (sentence === '') {
 			sentence = sentenceToCheck;
 		}
@@ -107,7 +129,6 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		for (const voice of speechSynthesis.getVoices()) {
 			if (voice.lang === 'fr-FR') {
 				utterance.voice = voice;
-				console.log("voice: " + voice.name);
 				if (voice.name === 'Google français' || voice.name === 'Audrey (Premium)') {
 					break
 				}
@@ -146,15 +167,20 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 
 	const checkSentence = () => {
 		speechSynthesis.cancel();
-		if (inputSentence === sentenceToCheck.replaceAll('’', "'")) {
+		let weight: number = weightedSentences.get(sentenceToCheck) ?? 0;
+		if (inputSentence === sentenceToCheck) {
 			setSentenceCheckResult("You got it right!");
+			weight /= 2;
 		} else {
-			setSentenceCheckResult("Not quite: " + highlightDifferences(inputSentence, sentenceToCheck.replaceAll('’', "'")));
+			setSentenceCheckResult("Not quite: " + highlightDifferences(inputSentence, sentenceToCheck));
+			weight *= 2;
 		}
+		setWeightedSentences(weightedSentences.set(sentenceToCheck, weight));
 	};
 
 	const close = () => {
 		setSentenceToCheck('');
+		resetWeighs();
 		onClose();
 	}
 
@@ -199,11 +225,25 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 				}
 				<p> There are {inputData.length} sentences </p>
 				<button onClick={showRandomLine}>Practise random sentence</button>
+				<button onClick={resetWeighs}>Reset weights</button>
 				<button onClick={close}>Clear sentences</button>
 			</div>
 		</div>
 	);
 };
 
+function hasSameKeys<K>(map: Map<K, any>, keys: K[]): boolean {
+	if (map.size !== keys.length) {
+		return false;
+	}
+
+	for (const item of keys) {
+		if (!map.has(item)) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 export default App;
