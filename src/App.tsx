@@ -102,6 +102,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 			cursor += weight;
 			if (cursor >= threshold) {
 				sentenceToCheckLocal = sentence;
+				setWeightedSentences(weightedSentences.set(sentence, weight / 2));
 				break;
 			}
 		}
