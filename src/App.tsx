@@ -46,17 +46,23 @@ const SentenceInputDialog: React.FC<SimpleInputDialogProps> = ({ isOpen, onClose
 	if (!isOpen) return null;
 
 	return (
-		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'white', padding: '20px', zIndex: 100 }}>
+		<div  style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'white', padding: '20px', zIndex: 100 }}>
 			<h1>Enter the sentences you want to practise</h1>
-			<textarea
-				rows={5}
+			<div>
+			<textarea className="textbox"
+				rows={10}
 				cols={50}
 				value={inputData}
 				onChange={handleInputChange}
-				style={{ width: '100%' }}
+				style={{
+					width: '100%',
+					fontSize: '18px',
+					marginLeft: '0px'
+				}}
 			/>
-			<div style={{ marginTop: '10px' }}>
-				<button onClick={handleSave} style={{ marginRight: '10px' }}>Save</button>
+			</div>
+			<div style={{marginTop: '10px'}}>
+				<button className="button" style={{width: '100%', marginLeft: '10px'}} onClick={handleSave}>Save</button>
 			</div>
 		</div>
 	);
@@ -74,6 +80,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	const [inputSentence, setInputSentence] = useState('');
 	const [sentenceCheckResult, setSentenceCheckResult] = useState<string>('');
 	const [speechSynthesisPaused, setSpeechSynthesisPaused] = useState<boolean>(false);
+	const [buttonsEnabled, setButtonsEnabled] = useState<boolean>(false);
 
 	const handleSentenceInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setInputSentence(event.target.value);
@@ -114,6 +121,7 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 		setSentenceCheckResult('');
 
 		speak();
+		setButtonsEnabled(true);
 	};
 
 	const resetWeighs = () => {
@@ -183,11 +191,13 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 			weight *= 4;
 		}
 		setWeightedSentences(weightedSentences.set(sentenceToCheck, weight));
+		setButtonsEnabled(false);
 	};
 
 	const close = () => {
 		setSentenceToCheck('');
 		resetWeighs();
+		setButtonsEnabled(false);
 		onClose();
 	}
 
@@ -206,34 +216,64 @@ const SentenceTrainer: React.FC<SimpleDialogWithInputProps> = ({ inputData, isOp
 	const tryAgain = () => {
 		setSentenceCheckResult('');
 		speak();
+		setButtonsEnabled(true);
 	};
 
+
+
 	return (
-		<div style={{ position: 'fixed', top: '20%', left: '30%', width: '40%', background: 'white', padding: '20px', zIndex: 100 }}>
-			<div style={{ width: "90%", height: "40%", display: "block", margin: "0 auto" }}>
-				{sentenceToCheck && !sentenceCheckResult &&
-					<div>
-						<textarea
-							rows={5}
-							cols={50}
-							onChange={handleSentenceInputChange}
-							style={{ width: '100%' }}
-						/>
-						<button onClick={speak}>Repeat</button>
-						<button onClick={pauseResume}>Pause/Resume</button>
-						<button onClick={checkSentence}>Check</button>
+		<div style={{
+			position: 'fixed',
+			top: '20%',
+			left: '12.5%',
+			width: '60%',
+			background: 'white',
+			padding: '20px',
+			zIndex: 100
+		}}>
+
+			<div style={{width: "90%", height: "40%", display: "block", margin: "0 auto"}}>
+				<p className="text"> There are {inputData.length} sentences </p>
+				<div style={{display: 'flex'}}>
+					<div style={{width: "30%"}}>
+						<div>
+							<button disabled={!buttonsEnabled} className="button" onClick={speak}>Repeat</button>
+						</div>
+						<div>
+							<button disabled={!buttonsEnabled} className="button" onClick={pauseResume}>Pause/Resume
+							</button>
+						</div>
+						<div>
+							<button disabled={!buttonsEnabled} className="button" onClick={checkSentence}>Check</button>
+						</div>
+						<div>
+							<button className="button" style={{ marginBottom: 60}} onClick={showRandomLine}>Practise random sentence</button>
+						</div>
+						<div>
+							<button className="button" onClick={resetWeighs}>Reset weights
+							</button>
+						</div>
+						<div>
+							<button className="button" style={{ marginBottom: 0}} onClick={close}>Clear sentences</button>
+						</div>
+						{sentenceCheckResult &&
+							<div>
+								<p className="text" dangerouslySetInnerHTML={{__html: sentenceCheckResult}}/>
+								<button className="button" onClick={tryAgain}>Try Again</button>
+							</div>
+						}
 					</div>
-				}
-				{sentenceCheckResult &&
-					<div>
-						<p dangerouslySetInnerHTML={{ __html: sentenceCheckResult }} />
-						<button onClick={tryAgain}>Try Again</button>
-					</div>
-				}
-				<p> There are {inputData.length} sentences </p>
-				<button onClick={showRandomLine}>Practise random sentence</button>
-				<button onClick={resetWeighs}>Reset weights</button>
-				<button onClick={close}>Clear sentences</button>
+					<textarea className="textbox"
+						rows={20}
+						cols={50}
+						onChange={handleSentenceInputChange}
+						style={{
+							width: '100%',
+							fontSize: '18px'
+						}}
+					/>
+				</div>
+
 			</div>
 		</div>
 	);
