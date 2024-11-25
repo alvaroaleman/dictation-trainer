@@ -36,3 +36,47 @@
     transform: rotate(360deg);
   }
 }
+
+.button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  margin-bottom: 8px;
+  min-width: 300px;
+  width: 100%;
+}
+
+.button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+.button:disabled {
+  background-color: #677566;
+}
+
+.textbox {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #131010;
+  border-radius: 8px;
+  margin-left: 12px;
+}
+
+.text {
+  font-family: 'Arial', sans-serif;
+  font-size: 20px;
+  line-height: 1.6;
+  color: #333;
+  margin: 10px 0;
+}
