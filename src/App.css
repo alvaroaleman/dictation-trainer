@@ -55,11 +55,6 @@
   width: 100%;
 }
 
-.button:hover {
-  background-color: #45a049;
-  transform: scale(1.05);
-}
-
 .button:disabled {
   background-color: #677566;
 }
