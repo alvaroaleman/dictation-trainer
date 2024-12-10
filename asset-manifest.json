@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/dictation-trainer/static/css/main.f855e6bc.css",
-    "main.js": "/dictation-trainer/static/js/main.84042300.js",
+    "main.css": "/dictation-trainer/static/css/main.247e5731.css",
+    "main.js": "/dictation-trainer/static/js/main.f1da6161.js",
     "static/js/453.5be075eb.chunk.js": "/dictation-trainer/static/js/453.5be075eb.chunk.js",
     "index.html": "/dictation-trainer/index.html",
-    "main.f855e6bc.css.map": "/dictation-trainer/static/css/main.f855e6bc.css.map",
-    "main.84042300.js.map": "/dictation-trainer/static/js/main.84042300.js.map",
+    "main.247e5731.css.map": "/dictation-trainer/static/css/main.247e5731.css.map",
+    "main.f1da6161.js.map": "/dictation-trainer/static/js/main.f1da6161.js.map",
     "453.5be075eb.chunk.js.map": "/dictation-trainer/static/js/453.5be075eb.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f855e6bc.css",
-    "static/js/main.84042300.js"
+    "static/css/main.247e5731.css",
+    "static/js/main.f1da6161.js"
   ]
 }
